@@ -7,9 +7,10 @@ export function middleware(request: NextRequest) {
   const { pathname} = request.nextUrl;
   console.log(pathname);
   const isAuth = request.cookies.get('accessToken')?.value;
-  if(privatePaths.includes(pathname) && !isAuth){
-    return NextResponse.redirect(new URL('/login', request.url))
-  }
+  
+  if (pathname.startsWith('/manage') && !isAuth) {
+  return NextResponse.redirect(new URL('/logout', request.url))
+}
   if(publicPaths.includes(pathname) && isAuth){
     return NextResponse.redirect(new URL('/', request.url))
   }

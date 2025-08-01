@@ -16,12 +16,11 @@ export const normalizePath = (path: string) => {
 }
 
 const isBrowser = typeof window !== 'undefined'
-export const getAccessTokenFromLocalStorage = () => {
-  return isBrowser ? localStorage.getItem('accessToken') : null
-}
-export const getRefreshTokenFromLocalStorage = () => {
-  return isBrowser ? localStorage.getItem('refreshToken') : null
-}
+
+export const getAccessTokenFromLocalStorage = () =>
+  isBrowser ? localStorage.getItem('accessToken') : null
+export const getRefreshTokenToLocalStorage = () =>
+  isBrowser ? localStorage.getItem('refreshToken') : null
 
 
 export const handleErrorApi = ({
@@ -46,3 +45,4 @@ export const handleErrorApi = ({
     })
   }
 }
+
