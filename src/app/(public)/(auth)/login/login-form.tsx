@@ -15,13 +15,18 @@ import { LoginBody, LoginBodyType } from "@/schemaValidations/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLoginMutation } from "@/queries/useAuth";
 
-import { toast } from "sonner";
 import { handleErrorApi } from "@/lib/utils";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect } from "react";
+import { useAppContext } from "@/components/app-provider";
+import { toast } from "sonner";
 
 export default function LoginForm() {
-  const router = useRouter();
   const loginMutation = useLoginMutation();
+  const searchParams = useSearchParams();
+  const clearTokens = searchParams.get("clearTokens");
+  const { setIsAuth } = useAppContext();
+
   const form = useForm<LoginBodyType>({
     resolver: zodResolver(LoginBody),
     defaultValues: {
@@ -29,11 +34,20 @@ export default function LoginForm() {
       password: "",
     },
   });
+  const router = useRouter();
+  useEffect(() => {
+    if (clearTokens) {
+      setIsAuth(false);
+    }
+  }, [clearTokens, setIsAuth]);
   const onSubmit = async (data: LoginBodyType) => {
+    // Khi nhấn submit thì React hook form sẽ validate cái form bằng zod schema ở client trước
+    // Nếu không pass qua vòng này thì sẽ không gọi api
     if (loginMutation.isPending) return;
     try {
       const result = await loginMutation.mutateAsync(data);
       toast(result.payload.message);
+      setIsAuth(true);
       router.push("/manage/dashboard");
     } catch (error: any) {
       handleErrorApi({
@@ -42,6 +56,7 @@ export default function LoginForm() {
       });
     }
   };
+
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
@@ -56,7 +71,7 @@ export default function LoginForm() {
             className="space-y-2 max-w-[600px] flex-shrink-0 w-full"
             noValidate
             onSubmit={form.handleSubmit(onSubmit, (err) => {
-              console.warn(err);
+              console.log(err);
             })}
           >
             <div className="grid gap-4">

@@ -1,4 +1,5 @@
 "use client";
+
 import {
   checkAndRefreshToken,
   getRefreshTokenFromLocalStorage,
@@ -6,19 +7,22 @@ import {
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
-export default function RefreshToken() {
+export default function RefreshTokenPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const refreshToken = searchParams.get("refreshToken");
-  const redirectUrl = searchParams.get("redirectUrl");
+  const refreshTokenFromUrl = searchParams.get("refreshToken");
+  const redirectPathname = searchParams.get("redirect");
   useEffect(() => {
-    if (refreshToken === getRefreshTokenFromLocalStorage()) {
+    if (
+      refreshTokenFromUrl &&
+      refreshTokenFromUrl === getRefreshTokenFromLocalStorage()
+    ) {
       checkAndRefreshToken({
         onSuccess: () => {
-          router.push(redirectUrl ?? "/");
+          router.push(redirectPathname || "/");
         },
       });
     }
-  }, [refreshToken, redirectUrl, router]);
-  return <div>RefreshToken</div>;
+  }, [router, refreshTokenFromUrl, redirectPathname]);
+  return <div>Refresh token....</div>;
 }
