@@ -5,6 +5,7 @@ import { twMerge } from 'tailwind-merge'
 import { EntityError } from './http'
 import authApiRequest from '@/apiRequests/auth'
 import jwt from 'jsonwebtoken'
+import { DishStatus } from '@/constants/type'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -100,5 +101,22 @@ export const checkAndRefreshToken = async (param?: {
     } catch (error) {
       param?.onError && param.onError()
     }
+  }
+}
+export const formatCurrency = (number: number) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND'
+  }).format(number)
+}
+
+export const getVietnameseDishStatus = (status: (typeof DishStatus)[keyof typeof DishStatus]) => {
+  switch (status) {
+    case DishStatus.Available:
+      return 'Có sẵn'
+    case DishStatus.Unavailable:
+      return 'Không có sẵn'
+    default:
+      return 'Ẩn'
   }
 }
