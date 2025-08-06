@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Upload } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -127,7 +127,7 @@ export default function EditDish({
       open={Boolean(id)}
       onOpenChange={(value) => {
         if (!value) {
-          reset();
+          setId(undefined);
         }
       }}
     >
