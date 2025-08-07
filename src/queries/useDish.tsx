@@ -11,7 +11,7 @@ export const useDishListQuery = () => {
 
 export const useGetDishQuery = (id: number | undefined) => {
   return useQuery({
-    queryKey: ["dish"],
+    queryKey: ["dishes", id],
     queryFn: () => dishApiRequest.getDish(id!),
     enabled: !!id,
   });

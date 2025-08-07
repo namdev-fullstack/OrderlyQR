@@ -72,7 +72,7 @@ export default function EditTable({
         changeToken: form.getValues("changeToken"),
       });
     }
-  }, [data]);
+  }, [data, form]);
 
   const reset = () => {
     setId(undefined);

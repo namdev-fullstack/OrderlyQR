@@ -12,7 +12,7 @@ export const useTableListQuery = () => {
 
 export const useGetTableQuery = (id: number | undefined) => {
   return useQuery({
-    queryKey: ["table"],
+    queryKey: ["table", id],
     queryFn: () => tableApiRequest.getTable(id!),
     enabled: !!id,
   });

@@ -47,6 +47,7 @@ export default function EditEmployee({
     defaultValues: {
       name: "",
       email: "",
+
       avatar: undefined,
       password: undefined,
       confirmPassword: undefined,
