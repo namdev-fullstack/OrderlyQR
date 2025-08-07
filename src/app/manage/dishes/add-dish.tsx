@@ -36,15 +36,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useAddDishMutation } from "@/queries/useDish";
 import { useUploadMediaMutation } from "@/queries/useMedia";
-import { useDishAddMutation } from "@/queries/useDish";
 import { toast } from "sonner";
+import revalidateApiRequest from "@/apiRequests/revalidate";
 
 export default function AddDish() {
-  const uploadImageMutation = useUploadMediaMutation();
-  const addDishMutation = useDishAddMutation();
   const [file, setFile] = useState<File | null>(null);
   const [open, setOpen] = useState(false);
+  const addDishMutation = useAddDishMutation();
+  const uploadMediaMutation = useUploadMediaMutation();
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const form = useForm<CreateDishBodyType>({
     resolver: zodResolver(CreateDishBody),
@@ -66,7 +67,6 @@ export default function AddDish() {
   }, [file, image]);
   const reset = () => {
     form.reset();
-
     setFile(null);
   };
   const onSubmit = async (values: CreateDishBodyType) => {
@@ -76,17 +76,20 @@ export default function AddDish() {
       if (file) {
         const formData = new FormData();
         formData.append("file", file);
-        const uploadImageRes = await uploadImageMutation.mutateAsync(formData);
-        const imageUrl = uploadImageRes.payload.data;
+        const uploadImageResult = await uploadMediaMutation.mutateAsync(
+          formData
+        );
+        const imageUrl = uploadImageResult.payload.data;
         body = {
-          ...body,
+          ...values,
           image: imageUrl,
         };
       }
-      const res = await addDishMutation.mutateAsync(body);
+      const result = await addDishMutation.mutateAsync(body);
+      await revalidateApiRequest("dishes");
+      toast(result.payload.message);
       reset();
       setOpen(false);
-      toast(res.payload.message);
     } catch (error) {
       handleErrorApi({
         error,
@@ -121,7 +124,10 @@ export default function AddDish() {
             noValidate
             className="grid auto-rows-max items-start gap-4 md:gap-8"
             id="add-dish-form"
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(onSubmit, (e) => {
+              console.log(e);
+            })}
+            onReset={reset}
           >
             <div className="grid gap-4 py-4">
               <FormField
@@ -133,7 +139,7 @@ export default function AddDish() {
                       <Avatar className="aspect-square w-[100px] h-[100px] rounded-md object-cover">
                         <AvatarImage src={previewAvatarFromFile} />
                         <AvatarFallback className="rounded-none">
-                          {name || "Avatar"}
+                          {name || "Ảnh món ăn"}
                         </AvatarFallback>
                       </Avatar>
                       <input

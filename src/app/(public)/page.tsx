@@ -1,4 +1,5 @@
 import dishApiRequest from "@/apiRequests/dish";
+import { formatCurrency } from "@/lib/utils";
 import { DishListResType } from "@/schemaValidations/dish.schema";
 import Image from "next/image";
 
@@ -51,9 +52,9 @@ export default async function Home() {
                   />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="text-xl font-semibold">Bánh mì</h3>
-                  <p className="">Bánh mì sandwidch</p>
-                  <p className="font-semibold">123,123đ</p>
+                  <h3 className="text-xl font-semibold">{item.name}</h3>
+                  <p className="">{item.description}</p>
+                  <p className="font-semibold">{formatCurrency(item.price)}</p>
                 </div>
               </div>
             ))}

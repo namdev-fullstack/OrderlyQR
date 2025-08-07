@@ -54,7 +54,7 @@ import AutoPagination from "@/components/auto-pagination";
 import { DishListResType } from "@/schemaValidations/dish.schema";
 import EditDish from "@/app/manage/dishes/edit-dish";
 import AddDish from "@/app/manage/dishes/add-dish";
-import { useDishDeleteMutation, useDishListQuery } from "@/queries/useDish";
+import { useDeleteDishMutation, useDishListQuery } from "@/queries/useDish";
 import { toast } from "sonner";
 
 type DishItem = DishListResType["data"][0];
@@ -160,13 +160,11 @@ function AlertDialogDeleteDish({
   dishDelete: DishItem | null;
   setDishDelete: (value: DishItem | null) => void;
 }) {
-  const deleteDishMutation = useDishDeleteMutation();
+  const { mutateAsync } = useDeleteDishMutation();
   const deleteDish = async () => {
     if (dishDelete) {
       try {
-        const result = await deleteDishMutation.mutateAsync({
-          id: dishDelete.id,
-        });
+        const result = await mutateAsync(dishDelete.id);
         setDishDelete(null);
         toast(result.payload.message);
       } catch (error) {

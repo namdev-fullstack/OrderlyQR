@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Upload } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { set, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -38,6 +38,8 @@ import { DishStatus, DishStatusValues } from "@/constants/type";
 import { Textarea } from "@/components/ui/textarea";
 import { useUploadMediaMutation } from "@/queries/useMedia";
 import { useGetDishQuery, useUpdateDishMutation } from "@/queries/useDish";
+
+import revalidateApiRequest from "@/apiRequests/revalidate";
 import { toast } from "sonner";
 
 export default function EditDish({
@@ -53,7 +55,7 @@ export default function EditDish({
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const uploadMediaMutation = useUploadMediaMutation();
   const updateDishMutation = useUpdateDishMutation();
-  const { data } = useGetDishQuery(id);
+  const { data } = useGetDishQuery({ enabled: Boolean(id), id: id as number });
   const form = useForm<UpdateDishBodyType>({
     resolver: zodResolver(UpdateDishBody),
     defaultValues: {
@@ -106,6 +108,7 @@ export default function EditDish({
         };
       }
       const result = await updateDishMutation.mutateAsync(body);
+      await revalidateApiRequest("dishes");
       toast(result.payload.message);
       reset();
       onSubmitSuccess && onSubmitSuccess();
@@ -127,7 +130,7 @@ export default function EditDish({
       open={Boolean(id)}
       onOpenChange={(value) => {
         if (!value) {
-          setId(undefined);
+          reset();
         }
       }}
     >
