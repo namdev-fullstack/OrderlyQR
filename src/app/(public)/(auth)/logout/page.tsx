@@ -14,7 +14,7 @@ function Logout() {
   const searchParams = useSearchParams();
   const refreshTokenFromUrl = searchParams.get("refreshToken");
   const accessTokenFromUrl = searchParams.get("accessToken");
-  const { setIsAuth } = useAppContext();
+  const { setRole } = useAppContext();
   const ref = useRef<any>(null);
   useEffect(() => {
     if (
@@ -31,10 +31,10 @@ function Logout() {
       setTimeout(() => {
         ref.current = null;
       }, 1000);
-      setIsAuth(false);
+      setRole();
       router.push("/login");
     });
-  }, [mutateAsync, router, refreshTokenFromUrl, accessTokenFromUrl, setIsAuth]);
+  }, [mutateAsync, router, refreshTokenFromUrl, accessTokenFromUrl, setRole]);
   return <div>Log out....</div>;
 }
 export default function LogoutPage() {
